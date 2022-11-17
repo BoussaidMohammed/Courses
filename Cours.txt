@@ -1,0 +1,20 @@
+*Arbre binaire localement complete:chaque noeud de l'arbre a soit 0 soit 2 fils.
+
+*Arbre binaire complete:c'est une arbre binaire localment complet, sauf que les
+feuille ont le meme profendeur.
+
+*Arbre binaire parfaitement equilibre: pour chaque noeud de l'arbre, le nombre des noeuds
+de fils gauche et fils droit different au plus d'un.
+
+*Arbre binaire equilibre: pour chaque noeud de l'arbre,la hauteur de fils gauche et de 
+fils droit se deffirent au plus d'un.
+
+*Arbre binaire parfait:toute les niveau sont entierment remplis sauf le dernier.
+
+*Arbre degenere: tous le noeuds de l'arbre possede q'un et un seul fils.
+
+*Profendeur:la distance de noeud par rapport a l'origine.(origine a profendeur 0)
+
+*Hauteur:c'est la profondeur maximal de c'est noeuds.profondeur de noeud le loin 
+possible de la racine.
+

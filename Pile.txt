@@ -1,0 +1,63 @@
+//Fonction qui test si une chaine est valide on respectant les parantese 
+bool estValide(char* chaine)
+{
+    pile* pi = creePile();
+    for(int i = 0;chaine[i] != '\0'; i++)
+    {
+        if( (chaine[i] == '[') || (chaine[i] == '(') ) empiler(pi,chaine[i]);
+        else if( chaine[i] == ']')
+        {
+            if( !estVide(pi) && (sommet(pi) == '[') ) depiler(pi);
+            else return false;
+        }
+        else if(chaine[i] == ')')
+        {
+            if(!estVide(pi) && sommet(pi) == '(') depiler(pi);
+            else return false;
+        }
+    }
+    return estVide(pi);
+}
+
+
+//fct qui test si une chaine se lit de 2 sens,correctment
+bool palindrome(char* chaine)
+{
+    pile* pi = creePile();
+    for(int i = 0;chaine[i] != '\0';i++) empiler(pi,chaine[i]);
+    for(int i = 0;chaine[i] != '0';i++)
+    {
+        if(sommet(pi) == chaine[i]) depiler(pi);
+        else return false;
+    }
+    return true;
+}
+
+//Fonction Polonaise
+int polonaise(char** tab,int N)
+{
+	pile* pi = cree_pile();
+	char a[taille],b[taille],resultat[taille];int res;
+	int i;
+	for(i=0;i<N;i++)
+     {
+     	if(est_operateur(tab[i]))
+     	{
+		 	strcpy(b,sommet(pi));
+		 	depiler(pi);puts(sommet(pi));
+		 	strcpy (a,sommet(pi));
+		 	depiler(pi);
+			//puts(a);puts(b);
+		 	res = calcul(a,b,tab[i]);
+		 	itoa(res,resultat,10);
+		 	empiler(pi,resultat);
+			 //afficher(pi);
+		 	
+		}
+		 else
+		 {
+		 	empiler(pi,tab[i]);afficher(pi);
+		 }
+	 }	
+	return  atoi(sommet(pi));	
+}

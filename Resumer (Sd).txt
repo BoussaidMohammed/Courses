@@ -1,0 +1,177 @@
+//Les arbre binaire de recherche
+le fils gauche inferieur strict a son pere,et le fils droit superieur strict a son pere
+//creation de type boolean
+typedef enum
+{
+    false,
+    true,
+}bool;
+
+//creation de type Arbre binaire de recherche(structure des arbres binaire))
+typedef struct noeud
+{
+    int val;
+    struct noeud *fg;
+    struct noeud *fd;
+}noeud,*ABR,*pnoeud;
+
+//fct qui point vers un arbre vide
+ABR cree_ABR()
+{
+    return NULL;
+}
+
+
+
+//la fct qui test si l'arbre est vide ou pas
+bool est_vide(ABR a)
+{
+    return (a == NULL);//si a egal a NULL l'expression (a == NULL) est vrais ,par consequance on renvoie vrais
+}
+
+//fct qui cree une noeud on alloue l'espace,et on affecte a elle une valeur e;
+au depart fils gauche et droite point vers null
+pnoeud cree_noeud(int e)
+{
+    pnoeud p = (pnoeud)malloc(sizeof(noeud));
+    p->val = e;
+    p->fg = p->fd = NULL;
+    return p;
+}
+
+//fct qui affect a une noeud le fils droite et le fils gauche,si elle est deja
+null donc on affecte rien;
+ABR construire(pnoeud r,ABR g,ABR d)
+{
+    if(!est_vide(r)) //si l'arbre est vide on a rien a lui affecter
+    {
+        r->fg = g;
+        r->fd = d;
+        return r;
+    }
+    return NULL;
+}
+
+//fct qui inser une valeur dans une ABR on respectant le principe des ABR
+fils gauche inferieur au racine,fils droit superieur au racine
+ABR inserer(ABR a,int e)
+{
+    if(est_vide(a))//l'arbre est vide donc l'ajoute imediate de cles
+    {
+        pnoeud p = cree_noeud(e);
+        return p;
+    }
+    //construction avec le racine  en appelant recurssivement notre fct sur la partie gauche
+    if(e < a->val) return construire(a,inserer(a->fg,e),a->fd);
+    //appelant la fct inserer sur la partie droit, on gardant toute l'arbre
+    if(e > a->val) return construire(a,a->fg,inserer(a->fd,e));
+    return a;
+}
+
+//fct boolean qui rechercher si un noeud existe dans un arbre
+bool rechercher_ABR(ABR a,int e)
+{
+    if(est_vide(a)) return false;//l'arbre est vide ce qui vaut dire,cles introuvable
+    if(e < a->val) return rechercher_ABR(a->fg,e);//cles inferieur que racine ,on recherche dans la partie gauche
+    if(e > a->val) return rechercher_ABR(a->fd,e);
+    return true;//on a l'egalite on renvoie vrais
+}
+
+//fct qui return le noeud maximum d'une arbre,le max se trouve au noeud extrement a droite
+pnoeud element_max(ABR a)
+{
+    if(est_vide(a->fd)) return a;//si un noeud n'a pas un fils droit,c'est bien lui le maximum
+    return element_max(a->fd);//si on a fils droit,on le test aussi si il un fils droit
+}
+
+//fct qui supprime l'element max d'une arbre
+ABR supprimer_max(ABR a)
+{
+    if(est_vide(a->fd)) return a->fg;//on a trouver le max,donc on renvoie sa cote gauche,
+    return construire(a,a->fg,supprimer_max(a->fd));//on gardant a ,et on supprimant dans la cote droite;
+}
+
+ABR supprimer(ABR a, int e)
+{
+    if(est_vide(a)) return a;//rien a supprimer en renvoie la meme arbre
+    if(e < a->val) return construire(a,supprimer(a->fg,e),a->fd);//on construire l'arbre ona appliquant la suppression sur fils gauche
+    if(e > a->val) return construire(a,a->fg,supprimer(a->fd,e));
+    else //on l'egalite
+    {   //si on a un seul fils, on le retourne
+        if(est_vide(a->fg)) return a->fd;
+        if(est_vide(a->fd)) return a->fg;
+        else//on a 2 sous-arbre,on remplace notre element a supprimer par le max de fils gauche,et le fils gauche par supprimer_max(a->fg);
+        {
+            pnoeud maxi = element_max(a->fg);
+            return construire(maxi,supprimer_max(a->fg),a->fd);
+        }
+    }
+}
+
+
+Les tasse
+// indice i, a comme pere (i - 1)/2;fils gauche 2i + 1; fils droite 2i + 2;
+// 2i + 1 >= n  --> case d'indice i est une feuille;
+// 2i + 2 >= n ,case d'indice i n'a pas de fils droit;
+typedef struct
+{
+    int tab[max];
+    int taille;
+}tas;
+
+//fct sert a cree une tas
+tas* cree_tas()
+{
+    tas* t = (tas*)malloc(sizeof(tas));
+    t->taille = 0;
+}
+
+//fait l'echange entre 2 valeurs entier
+void echanger(int *a,int *b)
+{
+    int temp;
+    temp = *a;*a = *b;*b = temp;
+}
+
+//inserer un element en respectant le principe des tas
+void inserer_tas(tas* t,int val)
+{
+    int n = t->taille++;
+    t->tab[n] = val;
+    while(n > 0)
+    {
+        if(t->tab[n] > t->tab[(n-1)/2] )
+        {
+            echanger(&t->tab[n],&t->tab[(n-1)/2]);
+            n = (n-1)/2;
+        }else return;
+    }
+}
+
+//supprime un element en respectant le principe des tas
+void supprimer_max(tas* t)
+{
+    int n = --t->taille,k,i = 0;
+    int* tab = t->tab;
+    tab[0] = tab[n];
+    while(2*i + 1 < n) //tanque on n'a pas arriver a une feuille
+    {
+        if( (2*i + 2 == n) || (tab[2*i+1] >= tab[2*i+2]) ) k = 2*i + 1;//on chosit le plus grand entre les 2 fils
+        else k = 2*i + 2;
+        if(tab[i] < tab[k])//indice pere est petit que son fils,donc on fait l'echange
+        {
+            echanger(&tab[i],&tab[k]);
+            i = k;
+        }
+        else return;// rien a echanger,donc on quite la fct
+    }
+}
+
+void afficher_tas(tas* t)
+{
+    for(int i = 0;i < t->taille;i++)
+    {
+        printf("%7d",t->tab[i]);
+    }
+    printf("\n");
+}

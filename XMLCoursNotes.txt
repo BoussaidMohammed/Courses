@@ -1,0 +1,142 @@
+<?xml version = "1.0">
+<!DOCTYPE liste[
+<!ATTLIST tel type (fixe|portable) #REQUIRED>
+<!ATTLIST etudiant code ID #REQUIRED >
+<!ATTLIST tel type (fixe|portable) "portable"> //portable pour specifier la valeur par defaut.
+<!ATTLIST liste etudiant CDATA #FIXED "2021"> // anne fixe ici.
+] >
+
+LES TYPES DES CODE EXISTE: ID, IDREF, IDREFS, NMTOKEN, NMTOKENS
+-ID ne doit pas contenir d'espace, il doi etre un nom xml valide, premier caractere un lettre, les caracters 
+speciaux sont interdit ca veut dire un NMTOKEN.
+- FPI = +-//OWNER//DTD LABEL//XX//
++ si le language suit l'ISO.- le cas contraire.
+XX: signifie la langue Fr, En ....
+
+Entity: utiliser pour declarer une abbrevation
+    <!ENTITY FSDM"Faculte des science Dhar el mahraz">
+    <msg>Rendez-vous a la &FSDM; ce soir,</msg>
+    On peut meme inserer le contenu d'un fichier a l'aide de mot cle system 
+
+Le language XSD:
+Type simple: tout element contient que du texte et aucun attribut.
+Type complexe: tout element contient d'autre elements, attribut.
+en xsd le shemas toujours dans un fichier externe (.xsd) 
+L'espace de nom est declarer dans un element et reconnu que dans tous les elements fils.
+Exemple de fichier xsd (shema):
+    <?xml version= "1.0">
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <xsd:element name="nom" type="xsd:string" />
+    </xsd:schema>
+Pour indiquer le fichier xsd a utiliser dans le document xml on ajoute ces 2 attributs dans l'element racine:
+<racine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="populationML.xsd"></racine>
+Definir votre propre type:
+    <xsd:simpleType name = "telType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value = "0/d{9}" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+d'autre type de restriction:
+liste de multichoix:
+---> mention:
+    <xsd: restriction base="xsd:string">
+        <xsd:ennumeration value = "P" />
+        <xsd:ennumeration value = "AB" />
+        <xsd:ennumeration value = "B" />
+        <xsd:ennumeration value = "TB" />
+    </xsd:restriction>
+---> note:
+    <xsd:restriction base="sxd:decimal">
+        <xsd:minInclusive  value="0"/>
+        <xsd:maxInclusive value ="20>
+    </xsd:restriction>
+
+ xsd:totalDigits
+ xsd:fractionDigits --> chifres apres la virgule
+ xsd:length --> longeur exacte.
+ xsd:maxLength --> max longeur.
+
+
+ Definir un type complexe
+    <xsd:complexType name = "leNom" type = "leType">
+        <xsd:sequence>
+        </xsd:sequence>
+        <xsd:attribute ...>
+        </xsd:attribute ...>
+    </xsd:complexType>
+
+
+    <xsd:group name="identification">
+        <xsd:element name= "e1:"......
+        ........
+    </xsd:group >
+    utilisation
+    <xds:groupe ref="identification">
+    
+    <xsd:attributeGroups name = "">
+    </xsd:attributeGroups name = "">
+
+type anonyme:
+    <xsd:elemement name = "etudiant">
+        <xsd:complexType>
+        </xsd:complexType>
+    <xsd:element>
+
+Declarer element qui a un contenu simple mais avec attributs;
+<xsd:element name = "tel" type = "telType" />
+<xsd:complexType name = "telType">
+    <xsd:simpleContent>
+        <xsd:extension base = "telType1>
+            <xsd:attribute name = "type" type = "typeType" default = "portable" />
+        </xsd:extension>
+    </xsd:simpleContent>
+</xsd:complexType>
+
+<xsd:simpleType name = "typeType">
+    <xsd:restriction base = "xsd:string">
+        <xsd:pattern value = "portable|fixe">
+    </xsd:restriction>
+</xsd:simpleType>
+
+comment afficher les elements xml: 
+    -css
+    -xsl: Xml style language (preferé que css car il est aussi en xml)
+<?xml-styesheet type = "text/css" href = "style.css" > pour inclure un style css dans un fichier xml.
+xsl divisé en 2 parties:
+    xsl-fo: equivalent avec css.
+    xslt: permet de transfermet le document xml en un autre formant.
+xslt:
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform > 
+        <xsl:template match = "/">
+        </xsl:template >
+    </xsl:stylesheet> </ le namespace du xslt.
+Xpath: utiliser pour determiner le noeuds xml.
+boucle foreach 
+<xsl:for-each select = "/liste/etudiant">
+    <xsl:value-of select = "nom"/>
+</xsl:for-each>
+
+<xsl:sort select = "nom" data-type = "text" order = "descending" /> il doit etre directement apres for-each.
+<xsl:if test="moyenne >= 10" > text a afficher </xsl:if>
+
+<xsl:choose>
+    <xsl:when test = "moyenne > 16" > tres bien </xsl:when>
+    <xsl:when test = "moyenne >14> bien </xsl:when>
+    <xsl:otherwise></otherwise>
+</xsl:choose>
+fonction xslt:
+--><xsl:value-of select = "liste/etudiant[position() = 3]/nom" /> afficher le nom du 3 etudiant, 
+    last() pour le dernier etudiant.
+--> <xsl:value-of select = "sum(/list/etudiant/moyenne) div count (/liste/etudiant)" /> calcule la moyenne.
+--> <xsl:value-of select = "substring(substring-after(@code, ' '),1,2)" /> extraire que les 2 premiers 
+    caracteres du code de l'etudiant
+XQuery:
+doc("emplacementFichierXml") --> charger le fichier en memoire.
+data($x) --> permet d'afficher du text.
+return $x --> retourne directement une balise (element), faut entourer par un element racine
+    pour quel soit afficher.
+
+SAX(Simpte Api for Xml)
+<[!CDATA[ DU TEXTE QUI DECARACTERISE LES caracteres speciaux]]>

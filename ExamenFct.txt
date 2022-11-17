@@ -1,0 +1,59 @@
+//fonction qui retourn la valeur minimum dans une tas max;
+int element_min(tas* t)
+{
+    int n = t->taille;
+    int *tab = t->tab;
+    int i = n - 1;
+    int min = tab[i];
+    while(2*i + 1 >= n)
+    {
+        if(tab[i] < min) min = tab[i];
+        i--;
+    }
+    return min;
+}
+
+//fction qui compte les noeud inf a k dans un ABR
+int nb_noeud(ABR a)
+{
+    if(estVide(a)) return 0;
+    return 1 + nb_noeud(a->fg) + nb_noeud(a->fd);
+}
+
+int compter_inf(ABR a,int k)
+{
+    if(estVide(a)) return 0;
+    if(k < a->val) return compter_inf(a->fg,k);
+    if(k > a->val) return 1 + nb_noeud(a->fg) + compter_inf(a->fd,k);
+    return nb_noeud(a->fg);
+}
+//fction qui compte les noeud inf a k dans un ABR
+int compter(ABR a,int k)
+{
+    if(estVide(a)) return 0;
+    if(a->val < k) return 1 + compter(a->fg,k) + compter(a->fd,k);
+    return compter(a->fg,k) + compter(a->fd,k);
+}
+
+//fonction decode
+
+void decode(ABR a,ABR origine,char *c)
+{
+    if(*c != '\0')
+    {
+        if(est_feuille(a))
+        {
+            printf("%c",a->c);
+            decode(origine,origine,c);
+        }
+        else
+        {
+            if(*c == '0') decode(a->fg,origine,c + 1);
+            else decode(a->fd,origine,c + 1);
+        } 
+    }
+    else
+    {
+        if(est_feuille(a))   printf("%c",a->c);
+    }
+}

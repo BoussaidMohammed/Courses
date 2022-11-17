@@ -1,0 +1,155 @@
+//TP2 list doublement chaine
+
+typedef struct monome
+{
+    int coefficient;
+    int degre;
+    struct monome *suiv;
+    struct monome *prec;
+}monome;
+
+typedef struct 
+{
+    int nb;
+    monome* prem;
+    monome* dern;
+}poly;
+
+//fct d'insertion d'un monome a l'ordre croissant
+void inserer_monome(poly* po,monome* m)
+{
+    if(est_vide(po)) ajouter_tete(po,m->coefficient,m->degre);
+    else if(m->degre > po->prem->degre) ajouter_tete(po,m->coefficient,m->degre);
+    else if(m->degre < po->dern->degre) ajouter_fin(po,m->coefficient,m->degre);
+    else//element est sure au milieu
+    {
+        monome* e = po->prem;
+        while(m->degre < e->degre) e = e->suiv;//si on se trouve avec un monome inferieur ou egal a notre monome on s'arrete
+        if(m->degre == e->degre) e->coefficient += m->coefficient;//si il y'a egalite on ajoute les coefficients
+        else ajouter_milieu(po,e->prec,m->coefficient,m->degre);//si non on ajouter le avant ce monome ca veut dire notre prec = e->prec;
+    }
+}
+
+poly* trier_poly(poly* po)
+{
+    poly* temp = cree_poly();//creation d'une nouvelle list qui va contenir tous les monomes tries;
+    monome* e = po->prem;//on point sur 1 ere element de la liste;
+    while(e)//on parcours notre list element par element jusqu'a la fin.
+    {
+        inserer_monome(temp,e);//on inserant un par un,a l'aide de la fct inserer decroissat
+        e = e->suiv;
+    }
+    return temp;//on renvoie notre nouvelle liste
+}
+
+void supprimer_degre(poly* po,int degre)
+{
+    monome* e = po->prem;
+    while(e)
+    {
+        if(e->degre == degre) 
+        {
+            supprimer_milieu(po,e->prec);return;//supprimer le monome avec pointeur precedent
+        }
+        else e = e->suiv;
+    }
+}
+
+void supprimer_poly(poly* po)
+{
+    while(!est_vide(po)) supprimer_tete(po);
+}
+
+poly* multi_scalaire(poly* po,int S)
+{
+    monome* e = po->prem;
+    while(e)
+    {
+        e->coefficient*= S;
+        e = e->suiv;
+    }
+    return po;
+}
+
+poly* multi_monome(poly* po,monome* m)
+{
+    monome* e = po->prem;
+    while(e)
+    {
+        e->coefficient *= m->coefficient;
+        e->degre += m->degre;
+        e = e->suiv;
+    }
+    return po;
+}
+
+poly* somme_poly(poly* po1,poly* po2)
+{
+    monome *e1,*e2;
+    e1 = po1->prem;e2 = po2->prem;
+    poly* po = cree_poly();
+    while(e1 || e2)
+    {
+        if(e1)
+        { 
+            inserer_monome(po,e1);
+            e1 = e1->suiv;
+        }
+        if(e2)
+        {
+            inserer_monome(po,e2);
+            e2 = e2->suiv;
+        }
+    }
+    return po;
+}
+
+
+poly* soustraction_poly(poly* po1,poly* po2)
+{
+    monome *e1,*e2;
+    e1 = po1->prem;e2 = po2->prem;
+    poly* po = cree_poly();
+    po2 = multi_scalaire(po2,-1);
+    while(e1 || e2)
+    {
+        if(e1)
+        { 
+            inserer_monome(po,e1);
+            e1 = e1->suiv;
+        }
+        if(e2)
+        {
+            inserer_monome(po,e2);
+            e2 = e2->suiv;
+        }
+    }
+    return po;
+}
+
+
+poly* produit_poly(poly* po1,poly* po2)
+{
+    poly* po = cree_poly();
+    monome* e = po1->prem;
+    while(e)
+    {
+        po = somme_poly(po,multi_monome(po2,e));// po += po*m
+        e = e->suiv;
+    }
+    return po;
+}
+
+void evaluer_x(poly* po)
+{
+    float x;
+    printf("Entrez x: \n");scanf("%f",&x);
+    monome* e = po->prem;
+    float some = 0;
+    while(e)
+    {
+        some += e->coefficient*pow(x,e->degre);
+        e = e->suiv;
+    }
+    printf("Restultat d'evaluation de x = %.2f",some);
+}

@@ -1,0 +1,94 @@
+element* acces_position(list* li,int pos)
+{
+    if(pos > li->nb || pos < 1) 
+    {
+        printf("position invalide\n"); return NULL;
+    }
+    else
+    {
+        int i = 1;
+        element* e = li->prem;
+        while(i < pos)
+        {
+            e = e->suiv;
+            i++;
+        }
+        return e;
+    }
+}
+
+list* inverser_list(list* li)
+{
+    list* temp = cree_list();
+    element* e = li->prem;
+    while(e)
+    {
+        ajouter_tete(temp,e->nom);
+        e = e->suiv;
+    }
+    supprimer_list(li);free(li); li = NULL;
+    return temp;
+}
+
+void inserer_element(list* li,element* f)
+{
+    if( (est_vide(li)) || (strcmp(f->nom,li->prem->nom) <= 0) ) ajouter_tete(li,f->nom);
+    else if(strcmp(f->nom,li->dern->nom) >= 0 ) ajouter_fin(li,f->nom);
+    else
+    {
+        element* e = li->prem;
+        while(strcmp(f->nom,e->suiv->nom) > 0) e = e->suiv;
+        ajouter_milieu(li,e,f->nom);
+    }
+}
+
+list* trier_list(list* li)
+{
+    list* temp = cree_list();
+    element* e = li->prem;
+    while(e)
+    {
+        inserer_element(temp,e);
+        e = e->suiv;
+    }
+    supprimer_list(li); free(li); li = NULL;
+    return temp;
+}
+
+void ajouter_position(list* li,int pos,char* nom)
+{
+    if(pos < 1 || pos > li->nb) return;
+    else
+    {
+        element* e = acces_position(li,pos-1);
+        ajouter_milieu(li,e,nom);
+    }
+}
+
+bool suffixe(list* L1,list* L2)
+{
+    if(est_vide(L1)) return true;
+    if(taille(L1) > taille(L2)) return false;
+    else
+    {
+        int i = 1,p = taille(L2) - taille(L1);
+        element* e = L2->prem;
+
+        while(i <= p)
+        {
+            e = e->suiv; i++;
+        }
+        printf("%s \n",e->nom);
+        element* e1 = L1->prem;
+        while(e)
+        {
+            if(strcmp(e->nom,e1->nom) == 0)
+            {
+                e = e->suiv;
+                e1 = e1->suiv;
+            }
+            else return false;
+        }
+        return true;
+    }
+}
